@@ -49,25 +49,26 @@ def data_preprocess():
 '''
 def data_preprocess():
     dataset = open("aclImdb/train/labeledBow.feat", "r")
-    data = np.zeros((2000,2000), dtype=int)
-    target = np.zeros(2000)
+    data = np.zeros((89527,25000), dtype=int)
+    target = np.zeros(25000)
     line_num = 0
     for line in dataset:
         print(line_num)
         list = line.split()
-        if line_num <= 1999:
-            if int(list[0]) >= 7:
-                target[line_num] = 1
-            if int(list[0]) <= 3:
-                target[line_num] = 0
+        if int(list[0]) >= 7:
+            target[line_num] = 1
+        if int(list[0]) <= 3:
+            target[line_num] = 0
         for num in range(1,len(list)):
             example_list = list[num].split(":")
             word_index = int(example_list[0])
             number = example_list[1]
-            if word_index <= 1999 and line_num <= 1999:
-                data[word_index, line_num] = number
+            data[word_index, line_num] = number
         line_num += 1
     corpus = {"data":data, "target":target}
-    file = open('train_data', 'wb')
+    file = open('train_data.pkl', 'wb')
     pickle.dump(corpus, file)
+    file.close()
     return corpus
+
+data_preprocess()
