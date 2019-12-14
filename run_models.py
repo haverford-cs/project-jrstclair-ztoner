@@ -1,6 +1,6 @@
 import util
 import numpy as np
-import cnn
+import fc_nn
 
 # sklearn imports
 from sklearn import utils

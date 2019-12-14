@@ -5,6 +5,7 @@ Author: Jack St Clair
 
 import numpy as np
 import optparse
+import pickle
 
 def parse_args():
     """Parse command line arguments (models)."""
@@ -67,4 +68,6 @@ def data_preprocess():
                 data[word_index, line_num] = number
         line_num += 1
     corpus = {"data":data, "target":target}
+    file = open('train_data', 'wb')
+    pickle.dump(corpus, file)
     return corpus
