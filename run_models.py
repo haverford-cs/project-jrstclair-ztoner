@@ -1,6 +1,7 @@
 import util
 import numpy as np
-import fc_nn
+import pickle
+#import fc_nn
 
 # sklearn imports
 from sklearn import utils
@@ -22,7 +23,7 @@ def runTuneTest(learner, params, X, y):
     for train_index, test_index in skf.split(X, y): # making each fold
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        clf = GridSearchCV(learner, params, cv = 3)
+        clf = GridSearchCV(learner, params, cv = 3, verbose = 10)
         clf.fit(X_train, y = y_train)
         best_params.append(clf.best_params_)
         train_scores.append(clf.score(X_train, y = y_train))
@@ -87,7 +88,10 @@ def run_support_vectors(X, y):
 def main():
 
     opts = util.parse_args()
-    data = util.data_preprocess()
+    #data = util.data_preprocess()
+    file = open('train_data.pkl', 'rb')
+    data = pickle.load(file)
+    file.close()
     X = data['data']
     y = data['target']
     X,y = utils.shuffle(X,y) # shuffle the rows (utils is from sklearn)
