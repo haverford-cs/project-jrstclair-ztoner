@@ -6,6 +6,7 @@ Author: Jack St Clair
 import numpy as np
 import optparse
 import pickle
+import random
 
 def parse_args():
     """Parse command line arguments (models)."""
@@ -48,22 +49,26 @@ def data_preprocess():
     return corpus
 '''
 def data_preprocess():
-    dataset = open("aclImdb/train/labeledBow.feat", "r")
-    data = np.zeros((89527,25000), dtype=int)
-    target = np.zeros(25000)
+    #dataset = open("aclImdb/train/labeledBow.feat", "r")
+    dataset = open("aclImdb/train/shuffledlabeledBow.feat", "r")
+    data = np.zeros((5000,2000), dtype=int) #shape (n_samples, n_features)
+    target = np.zeros(5000)
     line_num = 0
     for line in dataset:
         print(line_num)
-        list = line.split()
-        if int(list[0]) >= 7:
-            target[line_num] = 1
-        if int(list[0]) <= 3:
-            target[line_num] = 0
-        for num in range(1,len(list)):
-            example_list = list[num].split(":")
-            word_index = int(example_list[0])
-            number = example_list[1]
-            data[word_index, line_num] = number
+        if line_num <= 4999:
+            list = line.split()
+            if int(list[0]) >= 7:
+                target[line_num] = 1
+            if int(list[0]) <= 4:
+                target[line_num] = -1
+            for num in range(1,len(list)): #tabbed forward with block below
+                #if line_num <= 4999: #redundant
+                example_list = list[num].split(":") #list of form ['word','count']
+                word_index = int(example_list[0])
+                if word_index <= 1999:
+                    number = int(example_list[1]) #added int
+                    data[line_num, word_index] = number #swapped these see line 54 comment
         line_num += 1
     corpus = {"data":data, "target":target}
     file = open('train_data.pkl', 'wb')
@@ -71,4 +76,10 @@ def data_preprocess():
     file.close()
     return corpus
 
-data_preprocess()
+def shuffle_lines():
+    lines = open("aclImdb/train/labeledBow.feat").readlines()
+    random.shuffle(lines)
+    open('shuffledlabeledBow.feat', 'w').writelines(lines)
+
+if __name__ == "__main__":
+    data_preprocess()
