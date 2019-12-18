@@ -98,6 +98,48 @@ def run_support_vectors(X, y):
         print(str(i+1) + ", " + str(test_scores[i]))
     print("\n")
 
+def confusion_matrix(model, data, dtype = "binary"):
+    """
+    This function takes in the test dataset and a model and creates a confusion
+    matrix.
+    """
+    if dtype == "binary":
+        matrix = np.zeros((2, 2))
+        X = data['data']
+        y = data['target']
+        index = 0
+        for example in X:
+            prediction = model.predict(X)
+                if prediction == 1:
+                    pred = 1
+                if prediction == -1:
+                    pred = 0
+                if y[index] == 1:
+                    true = 1
+                if y[index] == -1:
+                    true = 0
+                matrix[true][pred] += 1
+            index += 1
+
+    if dtype == "non-binary":
+        matrix = np.zeros((8, 8))
+        X = data['data']
+        y = data['target']
+        index = 0
+        for example in X:
+            prediction = model.predict(X)
+                if prediction <= 4:
+                    pred = prediction - 1
+                if prediction >= 7:
+                    pred = prediction - 3
+                if y[index] <= 4:
+                    true = y[index] - 1
+                if y[index] >= 7:
+                    true = y[index] - 3
+                matrix[true][pred] += 1
+            index += 1
+            
+    return matrix
 
 def main():
 
