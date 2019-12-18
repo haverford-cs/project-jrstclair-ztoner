@@ -85,6 +85,7 @@ def data_preprocess_non_binary():
         print(line_num)
         if line_num <= 4999:
             list = line.split()
+            target[line_num] = int(list[0])
             for num in range(1,len(list)): #tabbed forward with block below
                 example_list = list[num].split(":") #list of form ['word','count']
                 word_index = int(example_list[0])
@@ -93,7 +94,58 @@ def data_preprocess_non_binary():
                     data[line_num, word_index] = number #swapped these see line 54 comment
         line_num += 1
     corpus = {"data":data, "target":target}
-    file = open('train_data.pkl', 'wb')
+    file = open('nb_train_data.pkl', 'wb')
+    pickle.dump(corpus, file)
+    file.close()
+    return corpus
+
+def test_data_preprocess():
+    #dataset = open("aclImdb/train/labeledBow.feat", "r")
+    dataset = open("aclImdb/test/shuffledlabeledBow.feat", "r")
+    data = np.zeros((5000,2000), dtype=int) #shape (n_samples, n_features)
+    target = np.zeros(5000)
+    line_num = 0
+    for line in dataset:
+        print(line_num)
+        if line_num <= 4999:
+            list = line.split()
+            if int(list[0]) >= 7:
+                target[line_num] = 1
+            if int(list[0]) <= 4:
+                target[line_num] = -1
+            for num in range(1,len(list)): #tabbed forward with block below
+                example_list = list[num].split(":") #list of form ['word','count']
+                word_index = int(example_list[0])
+                if word_index <= 1999:
+                    number = int(example_list[1]) #added int
+                    data[line_num, word_index] = number #swapped these see line 54 comment
+        line_num += 1
+    corpus = {"data":data, "target":target}
+    file = open('test_data.pkl', 'wb')
+    pickle.dump(corpus, file)
+    file.close()
+    return corpus
+
+def test_data_preprocess_non_binary():
+    #dataset = open("aclImdb/train/labeledBow.feat", "r")
+    dataset = open("aclImdb/test/shuffledlabeledBow.feat", "r")
+    data = np.zeros((5000,2000), dtype=int) #shape (n_samples, n_features)
+    target = np.zeros(5000)
+    line_num = 0
+    for line in dataset:
+        print(line_num)
+        if line_num <= 4999:
+            list = line.split()
+            target[line_num] = int(list[0])
+            for num in range(1,len(list)): #tabbed forward with block below
+                example_list = list[num].split(":") #list of form ['word','count']
+                word_index = int(example_list[0])
+                if word_index <= 1999:
+                    number = int(example_list[1]) #added int
+                    data[line_num, word_index] = number #swapped these see line 54 comment
+        line_num += 1
+    corpus = {"data":data, "target":target}
+    file = open('nb_test_data.pkl', 'wb')
     pickle.dump(corpus, file)
     file.close()
     return corpus
@@ -105,3 +157,6 @@ def shuffle_lines():
 
 if __name__ == "__main__":
     data_preprocess()
+    data_preprocess_non_binary()
+    test_data_preprocess()
+    test_data_preprocess_non_binary()

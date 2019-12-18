@@ -60,14 +60,7 @@ def run_KNN(X,y):
     print("best model params:")
     print(str(best_model.get_params))
 
-    print("")
-    print("confusion matrix: \n")
-
-    cma, accuracy = confusion_matrix(best_model, X, y)
-    print(str(cma))
-
-    print("accuracy:")
-    print(str(accuracy))
+    return(best_model)
 
 def run_random_forest(X, y):
     """
@@ -88,6 +81,11 @@ def run_random_forest(X, y):
         print(str(i+1) + ", " + str(test_scores[i]))
     print("\n")
 
+    print("best model params:")
+    print(str(best_model.get_params))
+
+    return(best_model)
+
 def run_support_vectors(X, y):
     """
     This function will take in data and run it on an SVM classifier.
@@ -106,6 +104,11 @@ def run_support_vectors(X, y):
     for i in range(len(test_scores)):
         print(str(i+1) + ", " + str(test_scores[i]))
     print("\n")
+
+    print("best model params:")
+    print(str(best_model.get_params))
+
+    return(best_model)
 
 def confusion_matrix(model, X, y, datatype = "binary"):
     """
@@ -152,7 +155,8 @@ def confusion_matrix(model, X, y, datatype = "binary"):
                 true = y[index] - 3
             if predictions[index] == y[index]:
                 correct += 1
-            matrix[true][pred] += 1
+            #print(str(true))
+            matrix[int(true)][int(pred)] += 1
             index += 1
         accuracy = correct/index
 
@@ -163,19 +167,58 @@ def main():
     opts = util.parse_args()
     #data = util.data_preprocess()
     file = open('train_data.pkl', 'rb')
+    test_file = open('test_data.pkl', 'rb')
     data = pickle.load(file)
+    test_data = pickle.load(test_file)
     file.close()
+    test_file.close()
     X = data['data']
     y = data['target']
+    test_X = test_data['data']
+    test_y = test_data['target']
     X,y = utils.shuffle(X,y) # shuffle the rows (utils is from sklearn)
-    X = X[:2000] # only keep 1000 examples
+    X = X[:2000] # only keep 2000 examples
     y = y[:2000]
+
+    test_X = test_X[:2000] # only keep 2000 examples
+    test_y = test_y[:2000]
+
     if opts.model == "KNN":
-        run_KNN(X,y)
+        best_model = run_KNN(X,y)
+
+        print("")
+        print("confusion matrix: \n")
+
+        cma, accuracy = confusion_matrix(best_model, test_X, test_y)
+
+        print(str(cma))
+        print("accuracy:")
+        print(str(accuracy))
+
     elif opts.model == "RF":
-        run_random_forest(X, y)
+        best_model = run_random_forest(X, y)
+
+        print("")
+        print("confusion matrix: \n")
+
+        cma, accuracy = confusion_matrix(best_model, test_X, test_y)
+
+        print(str(cma))
+        print("accuracy:")
+        print(str(accuracy))
+
     elif opts.model == "SVM":
-        run_support_vectors(X, y)
+        best_model = run_support_vectors(X, y)
+
+        print("")
+        print("confusion matrix: \n")
+
+        cma, accuracy = confusion_matrix(best_model, test_X, test_y)
+
+        print(str(cma))
+        print("accuracy:")
+        print(str(accuracy))
+
     else:
         print("Specify model to be run with -m")
         print("Options: KNN, RF, SVM")
