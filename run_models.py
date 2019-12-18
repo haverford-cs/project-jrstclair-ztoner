@@ -19,6 +19,9 @@ def runTuneTest(learner, params, X, y):
     best_params = []
     train_scores = []
     test_scores = []
+    test_score = 0.0
+    best_model = learner
+
     skf = StratifiedKFold(n_splits = 5, random_state = 42, shuffle = True)
     for train_index, test_index in skf.split(X, y): # making each fold
         X_train, X_test = X[train_index], X[test_index]
@@ -27,13 +30,18 @@ def runTuneTest(learner, params, X, y):
         clf.fit(X_train, y = y_train)
         best_params.append(clf.best_params_)
         train_scores.append(clf.score(X_train, y = y_train))
-        test_scores.append(clf.score(X_test, y = y_test))
-    return best_params, train_scores, test_scores
+        new_score = clf.score(X_test, y = y_test)
+        test_scores.append(new_score)
+        if new_score >= test_score:
+            test_score = new_score
+            best_model = clf
+
+    return best_params, train_scores, test_scores, best_model
 
 def run_KNN(X,y):
     knn_clf = KNeighborsClassifier()
     parameters = {"weights": ["uniform", "distance"], "n_neighbors": [1, 5, 11]}
-    best_params, train_scores, test_scores = runTuneTest(knn_clf, parameters, X, y)
+    best_params, train_scores, test_scores, best_model = runTuneTest(knn_clf, parameters, X, y)
     print("---------------")
     print("KNN")
     print("---------------" + "\n")
@@ -46,13 +54,19 @@ def run_KNN(X,y):
         print(str(i+1) + ", " + str(test_scores[i]))
     print("\n")
 
+    print("Testing best model...")
+    modelscore = best_model.score(X, y)
+    print(str(modelscore))
+    print("params:")
+    print(str(best_model.get_params))
+
 def run_random_forest(X, y):
     """
     This function will take in data and run it on a random forest classifier.
     """
     clf = RandomForestClassifier(n_estimators = 200)
     parameters = {"max_features": [1/100.0, 1/10.0, "sqrt"]}
-    best_params, train_scores, test_scores = runTuneTest(clf, parameters, X, y)
+    best_params, train_scores, test_scores, best_model = runTuneTest(clf, parameters, X, y)
     print("---------------")
     print("Random Forest")
     print("---------------" + "\n")
@@ -71,7 +85,7 @@ def run_support_vectors(X, y):
     """
     clf = SVC()
     parameters = {"C": [1, 10, 100, 1000], "gamma": [0.0001 , 0.001, 0.01, 0.1, 1.0]}
-    best_params, train_scores, test_scores = runTuneTest(clf, parameters, X, y)
+    best_params, train_scores, test_scores, best_model = runTuneTest(clf, parameters, X, y)
     print("---------------")
     print("SVM")
     print("---------------" + "\n")
