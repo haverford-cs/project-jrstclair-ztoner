@@ -54,11 +54,20 @@ def run_KNN(X,y):
         print(str(i+1) + ", " + str(test_scores[i]))
     print("\n")
 
-    print("Testing best model...")
-    modelscore = best_model.score(X, y)
-    print(str(modelscore))
-    print("params:")
+    #print("Testing best model...")
+    #modelscore = best_model.score(X, y)
+    #print(str(modelscore))
+    print("best model params:")
     print(str(best_model.get_params))
+
+    print("")
+    print("confusion matrix: \n")
+
+    cma, accuracy = confusion_matrix(best_model, X, y)
+    print(str(cma))
+
+    print("accuracy:")
+    print(str(accuracy))
 
 def run_random_forest(X, y):
     """
@@ -98,48 +107,56 @@ def run_support_vectors(X, y):
         print(str(i+1) + ", " + str(test_scores[i]))
     print("\n")
 
-def confusion_matrix(model, data, dtype = "binary"):
+def confusion_matrix(model, X, y, datatype = "binary"):
     """
     This function takes in the test dataset and a model and creates a confusion
     matrix.
     """
-    if dtype == "binary":
+    if datatype == "binary":
         matrix = np.zeros((2, 2))
-        X = data['data']
-        y = data['target']
+        #X = data['data']
+        #y = data['target']
         index = 0
+        correct = 0
+        predictions = model.predict(X)
         for example in X:
-            prediction = model.predict(X)
-                if prediction == 1:
-                    pred = 1
-                if prediction == -1:
-                    pred = 0
-                if y[index] == 1:
-                    true = 1
-                if y[index] == -1:
-                    true = 0
-                matrix[true][pred] += 1
+            if predictions[index] == 1:
+                pred = 1
+            if predictions[index] == -1:
+                pred = 0
+            if y[index] == 1:
+                true = 1
+            if y[index] == -1:
+                true = 0
+            if predictions[index] == y[index]:
+                correct += 1
+            matrix[true][pred] += 1
             index += 1
+        accuracy = correct/index
 
-    if dtype == "non-binary":
+    if datatype == "non-binary":
         matrix = np.zeros((8, 8))
-        X = data['data']
-        y = data['target']
+        #X = data['data']
+        #y = data['target']
         index = 0
+        correct = 0
+        predictions = model.predict(X)
         for example in X:
-            prediction = model.predict(X)
-                if prediction <= 4:
-                    pred = prediction - 1
-                if prediction >= 7:
-                    pred = prediction - 3
-                if y[index] <= 4:
-                    true = y[index] - 1
-                if y[index] >= 7:
-                    true = y[index] - 3
-                matrix[true][pred] += 1
+            if predictions[index] <= 4:
+                pred = predictions[index] - 1
+            if predictions[index] >= 7:
+                pred = predictions[index] - 3
+            if y[index] <= 4:
+                true = y[index] - 1
+            if y[index] >= 7:
+                true = y[index] - 3
+            if predictions[index] == y[index]:
+                correct += 1
+            matrix[true][pred] += 1
             index += 1
-            
-    return matrix
+        accuracy = correct/index
+
+    return matrix, accuracy
 
 def main():
 
