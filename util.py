@@ -49,6 +49,10 @@ def data_preprocess():
     return corpus
 '''
 def data_preprocess():
+    """
+    preprocess data into a dictionary structure for sklearn. Bins
+    the data into two classes of good and be reviews.
+    """
     #dataset = open("aclImdb/train/labeledBow.feat", "r")
     dataset = open("aclImdb/train/shuffledlabeledBow.feat", "r")
     data = np.zeros((5000,2000), dtype=int) #shape (n_samples, n_features)
@@ -76,6 +80,10 @@ def data_preprocess():
     return corpus
 
 def data_preprocess_non_binary():
+    """
+    the same as the above function but this preprocessor keeps
+    all the unique review scores instead of binning them.
+    """
     #dataset = open("aclImdb/train/labeledBow.feat", "r")
     dataset = open("aclImdb/train/shuffledlabeledBow.feat", "r")
     data = np.zeros((5000,2000), dtype=int) #shape (n_samples, n_features)

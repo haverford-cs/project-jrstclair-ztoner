@@ -41,6 +41,9 @@ def runTuneTest(learner, params, X, y):
     return best_params, train_scores, test_scores, best_model
 
 def run_KNN(X,y):
+    """
+    This function will take in data and run it on a knn classifier.
+    """
     knn_clf = KNeighborsClassifier()
     parameters = {"weights": ["uniform", "distance"], "n_neighbors": [1, 5, 11]}
     best_params, train_scores, test_scores, best_model = runTuneTest(knn_clf, parameters, X, y)
