@@ -1,6 +1,7 @@
 """
 Util file for SVM, Random Forest and KNN
-Author: Jack St Clair
+Author: Jack St Clair and Zachary Toner
+Date: 12/20/2019
 """
 
 import numpy as np
@@ -108,6 +109,9 @@ def data_preprocess_non_binary():
     return corpus
 
 def test_data_preprocess():
+    """
+    same as data_preprocess but for test data.
+    """
     #dataset = open("aclImdb/train/labeledBow.feat", "r")
     dataset = open("aclImdb/test/shuffledlabeledBow.feat", "r")
     data = np.zeros((5000,2000), dtype=int) #shape (n_samples, n_features)
@@ -135,6 +139,9 @@ def test_data_preprocess():
     return corpus
 
 def test_data_preprocess_non_binary():
+    """
+    same as data_preprocess_non_binary but for test data.
+    """
     #dataset = open("aclImdb/train/labeledBow.feat", "r")
     dataset = open("aclImdb/test/shuffledlabeledBow.feat", "r")
     data = np.zeros((5000,2000), dtype=int) #shape (n_samples, n_features)
@@ -159,6 +166,9 @@ def test_data_preprocess_non_binary():
     return corpus
 
 def shuffle_lines():
+    """
+    this function will shuffle the lines in the data.
+    """
     lines = open("aclImdb/train/labeledBow.feat").readlines()
     random.shuffle(lines)
     open('shuffledlabeledBow.feat', 'w').writelines(lines)

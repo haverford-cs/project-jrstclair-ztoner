@@ -1,3 +1,8 @@
+"""
+This is the main file for running all the models in the project.
+Author: Jack St Clair and Zachary Toner
+Date: 12/20/2019
+"""
 import util
 import numpy as np
 import pickle
