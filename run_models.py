@@ -3,6 +3,8 @@ import numpy as np
 import pickle
 #import fc_nn
 
+from copy import deepcopy
+
 # sklearn imports
 from sklearn import utils
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
@@ -20,13 +22,13 @@ def runTuneTest(learner, params, X, y):
     train_scores = []
     test_scores = []
     test_score = 0.0
-    best_model = learner
+    best_model = None
 
     skf = StratifiedKFold(n_splits = 5, random_state = 42, shuffle = True)
     for train_index, test_index in skf.split(X, y): # making each fold
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        clf = GridSearchCV(learner, params, cv = 3, verbose = 10)
+        clf = GridSearchCV(learner, params, cv = 3, verbose = 1)
         clf.fit(X_train, y = y_train)
         best_params.append(clf.best_params_)
         train_scores.append(clf.score(X_train, y = y_train))
@@ -34,7 +36,7 @@ def runTuneTest(learner, params, X, y):
         test_scores.append(new_score)
         if new_score >= test_score:
             test_score = new_score
-            best_model = clf
+            best_model = deepcopy(clf)
 
     return best_params, train_scores, test_scores, best_model
 
@@ -177,10 +179,11 @@ def main():
     test_X = test_data['data']
     test_y = test_data['target']
     X,y = utils.shuffle(X,y) # shuffle the rows (utils is from sklearn)
-    X = X[:2000] # only keep 2000 examples
+
+    X = X[:2000] # only keep a certain number of examples
     y = y[:2000]
 
-    test_X = test_X[:2000] # only keep 2000 examples
+    test_X = test_X[:2000] # only keep a certain number of examples
     test_y = test_y[:2000]
 
     if opts.model == "KNN":
@@ -189,7 +192,7 @@ def main():
         print("")
         print("confusion matrix: \n")
 
-        cma, accuracy = confusion_matrix(best_model, test_X, test_y)
+        cma, accuracy = confusion_matrix(best_model.best_estimator_, test_X, test_y)
 
         print(str(cma))
         print("accuracy:")
@@ -201,11 +204,14 @@ def main():
         print("")
         print("confusion matrix: \n")
 
-        cma, accuracy = confusion_matrix(best_model, test_X, test_y)
+        cma, accuracy = confusion_matrix(best_model.best_estimator_, test_X, test_y)
 
         print(str(cma))
         print("accuracy:")
         print(str(accuracy))
+
+        print("feature importances: ")
+        print(str(best_model.best_estimator_.feature_importances_))
 
     elif opts.model == "SVM":
         best_model = run_support_vectors(X, y)
@@ -213,7 +219,7 @@ def main():
         print("")
         print("confusion matrix: \n")
 
-        cma, accuracy = confusion_matrix(best_model, test_X, test_y)
+        cma, accuracy = confusion_matrix(best_model.best_estimator_, test_X, test_y)
 
         print(str(cma))
         print("accuracy:")
