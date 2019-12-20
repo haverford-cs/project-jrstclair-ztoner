@@ -210,8 +210,20 @@ def main():
         print("accuracy:")
         print(str(accuracy))
 
-        print("feature importances: ")
-        print(str(best_model.best_estimator_.feature_importances_))
+        print("feature importances: ") #print the most important features (words) for the random forest
+        importances = best_model.best_estimator_.feature_importances_
+        most_important = np.argsort(importances)
+        most_important_shorter = most_important[:30]
+        print(str(most_important_shorter))
+
+        v = open("aclImdb/imdb.vocab", "r")
+        vocab = v.readlines()
+        v.close()
+
+        print("highest-importance words printed first:")
+
+        for i in most_important_shorter:
+            print(vocab[i])
 
     elif opts.model == "SVM":
         best_model = run_support_vectors(X, y)
